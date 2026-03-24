@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Предложение дружбы | Борис Николаевич</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e2a3a 0%, #0f1a24 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'Roboto', 'Merriweather', 'Georgia', serif;
+            padding: 20px;
+            cursor: default;
+            position: relative;
+        }
+
+        /* Стилизованное окно */
+        .friendship-card {
+            background: rgba(255, 248, 235, 0.98);
+            backdrop-filter: blur(2px);
+            max-width: 600px;
+            width: 100%;
+            border-radius: 48px 32px 56px 32px;
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            border: 1px solid rgba(210, 180, 140, 0.6);
+            z-index: 10;
+        }
+
+        .friendship-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 35px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-header {
+            background: #9b2f2f;
+            background-image: linear-gradient(135deg, #b5453a 0%, #7e2a24 100%);
+            padding: 20px 28px 14px 28px;
+            text-align: center;
+            border-bottom: 4px solid #e6c78c;
+        }
+
+        .card-header h2 {
+            color: #ffefcf;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0 #4a1a14;
+            font-weight: 600;
+            font-family: 'Georgia', serif;
+        }
+
+        .card-header p {
+            color: #ffd9a5;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .card-content {
+            padding: 32px 28px 28px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.85rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            line-height: 1.3;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(145deg, #3e2a1f, #2b1e12);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 6px rgba(255,215,150,0.3);
+        }
+
+        .sub-name {
+            font-size: 1.2rem;
+            color: #7a5a4a;
+            margin-bottom: 30px;
+            border-top: 1px dashed #deb887;
+            display: inline-block;
+            padding-top: 12px;
+            font-weight: 500;
+        }
+
+        /* Контейнер для кнопок */
+        .buttons-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            min-height: 100px;
+        }
+
+        /* Базовый стиль кнопок */
+        .btn {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 14px 36px;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
+            font-family: 'Segoe UI', system-ui;
+            letter-spacing: 1px;
+            min-width: 130px;
+            z-index: 10;
+        }
+
+        .btn-yes {
+            background: linear-gradient(145deg, #3c8c3c, #1f571f);
+            color: white;
+            border-bottom: 3px solid #0e3a0e;
+        }
+
+        .btn-yes:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(145deg, #4ba34b, #2a6e2a);
+            box-shadow: 0 7px 0 #0e3a0e;
+        }
+
+        .btn-yes:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #0e3a0e;
+        }
+
+        /* Кнопка "НЕТ" - ускользающая */
+        .btn-no {
+            background: linear-gradient(145deg, #aa3e2c, #812a1a);
+            color: #fff6e0;
+            border-bottom: 3px solid #561a0e;
+            position: relative;
+            transition: left 0.15s ease-out, top 0.15s ease-out, transform 0.1s;
+            will-change: left, top;
+            z-index: 10;
+        }
+
+        .btn-no:hover {
+            background: linear-gradient(145deg, #c24b36, #9a341f);
+            transform: scale(0.98);
+            cursor: default;
+        }
+
+        /* Модальное окно с видео */
+        .video-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .video-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .video-modal-content {
+            background: #1a1a1a;
+            border-radius: 32px;
+            max-width: 90vw;
+            max-height: 90vh;
+            width: auto;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            border: 3px solid #e6c78c;
+            overflow: hidden;
+            animation: modalAppear 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        @keyframes modalAppear {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .video-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        .celebration-video {
+            display: block;
+            max-width: 100%;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            cursor: pointer;
+        }
+
+        .close-video-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid #e6c78c;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 10;
+            font-weight: bold;
+            backdrop-filter: blur(4px);
+        }
+
+        .close-video-btn:hover {
+            background: #9b2f2f;
+            transform: scale(1.05);
+            border-color: #ffdfa5;
+        }
+
+        .video-message {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.7), transparent);
+            color: #ffefcf;
+            padding: 12px;
+            font-size: 1rem;
+            font-family: 'Georgia', serif;
+            pointer-events: none;
+        }
+
+        /* Старое модальное окно с текстом (теперь вспомогательное) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-window {
+            background: #fffaf0;
+            border-radius: 48px;
+            max-width: 440px;
+            width: 90%;
+            text-align: center;
+            padding: 28px 20px 36px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid #e6cfa0;
+            transform: scale(0.9);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.active .modal-window {
+            transform: scale(1);
+        }
+
+        .modal-window h3 {
+            font-size: 2rem;
+            color: #2c6e2c;
+            margin-bottom: 16px;
+            font-family: 'Georgia', serif;
+        }
+
+        .modal-window p {
+            font-size: 1.2rem;
+            color: #3a2c22;
+            margin: 16px 0;
+        }
+
+        .modal-close {
+            background: #9b2f2f;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 26px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 16px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .modal-close:hover {
+            background: #bc4a3a;
+        }
+
+        @media (max-width: 550px) {
+            .btn {
+                padding: 10px 24px;
+                font-size: 1.2rem;
+                min-width: 100px;
+            }
+            .question-text {
+                font-size: 1.4rem;
+            }
+            .buttons-container {
+                gap: 20px;
+            }
+            .card-content {
+                padding: 24px 20px;
+            }
+            .close-video-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 24px;
+                top: 10px;
+                right: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="friendship-card">
+    <div class="card-header">
+        <h2>🤝 Предложение дружбы</h2>
+        <p>искреннее и уважительное</p>
+    </div>
+    <div class="card-content">
+        <div class="question-text">
+            Борис Николаевич,<br>
+            принимаете ли вы предложение дружбы от Алексея Турлякова?
+        </div>
+        <div class="sub-name">⚜️ с надеждой на тёплый ответ ⚜️</div>
+
+        <div class="buttons-container" id="buttonsContainer">
+            <button class="btn btn-yes" id="yesButton">ДА 👍</button>
+            <button class="btn btn-no" id="noButton">НЕТ 👎</button>
+        </div>
+        <div style="margin-top: 28px; font-size: 0.75rem; color: #b29a7a;">✧ дружба — это дар ✧</div>
+    </div>
+</div>
+
+<!-- Модальное окно с текстовым поздравлением (появится после закрытия видео) -->
+<div id="successModal" class="modal-overlay">
+    <div class="modal-window">
+        <h3>💖 Прекрасно! 💖</h3>
+        <p>Борис Николаевич, вы приняли дружбу!<br> Алексей Турляков очень рад и благодарен.</p>
+        <p style="font-size:1rem">🎉 Да будут годы наполнены теплом и взаимопониманием! 🎉</p>
+        <button class="modal-close" id="closeModalBtn">С теплом принять</button>
+    </div>
+</div>
+
+<!-- Модальное окно для видео (зацикленное) -->
+<div id="videoModal" class="video-modal-overlay">
+    <div class="video-modal-content">
+        <div class="video-container">
+            <video id="celebrationVideo" class="celebration-video" autoplay muted loop playsinline>
+                <source src="vid.mp4" type="video/mp4">
+                Ваш браузер не поддерживает видео. Но дружба всё равно прекрасна! 🎉
+            </video>
+            <button class="close-video-btn" id="closeVideoBtn">✕</button>
+            <div class="video-message">✨ Поздравляем с новым другом! ✨</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Элементы
+        const noButton = document.getElementById('noButton');
+        const yesButton = document.getElementById('yesButton');
+        const container = document.getElementById('buttonsContainer');
+        const textModal = document.getElementById('successModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        // Элементы видео-модалки
+        const videoModal = document.getElementById('videoModal');
+        const celebrationVideo = document.getElementById('celebrationVideo');
+        const closeVideoBtn = document.getElementById('closeVideoBtn');
+
+        // Переменная для отслеживания, было ли видео показано (чтобы не накладывать модалки)
+        let isVideoPlaying = false;
+
+        // ---- Функции для работы с модальными окнами ----
+        function closeTextModal() {
+            textModal.classList.remove('active');
+        }
+
+        function openTextModal() {
+            textModal.classList.add('active');
+        }
+
+        // Функция для остановки видео и закрытия видео-модалки
+        function closeVideoModal() {
+            if (celebrationVideo) {
+                celebrationVideo.pause();
+                // Сбрасываем видео на начало, чтобы при следующем открытии началось с начала
+                celebrationVideo.currentTime = 0;
+            }
+            videoModal.classList.remove('active');
+            isVideoPlaying = false;
+
+            // После закрытия видео показываем текстовое поздравление
+            openTextModal();
+        }
+
+        // Функция для открытия видео-модалки и запуска зацикленного видео
+        function openVideoModal() {
+            if (isVideoPlaying) return;
+
+            // Показываем видео-модалку
+            videoModal.classList.add('active');
+
+            // Пытаемся запустить видео
+            if (celebrationVideo) {
+                // Убедимся, что видео загружено и запускаем
+                const playPromise = celebrationVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("Автовоспроизведение заблокировано, нужно взаимодействие:", error);
+                        // Пробуем запустить после клика (но модалка уже открыта, пользователь может кликнуть по видео)
+                        // Добавляем слушатель на клик по видео, чтобы запустить
+                        const startVideo = () => {
+                            celebrationVideo.play().catch(e => console.log("Ошибка воспроизведения:", e));
+                            celebrationVideo.removeEventListener('click', startVideo);
+                        };
+                        celebrationVideo.addEventListener('click', startVideo);
+                        // Также можно показать подсказку
+                        const msgDiv = document.querySelector('.video-message');
+                        if (msgDiv) msgDiv.style.opacity = '0.8';
+                    });
+                }
+                celebrationVideo.loop = true;
+                celebrationVideo.muted = false; // Убираем muted, чтобы звук был (если нужно)
+                // Если видео не может автоматически воспроизводиться со звуком, оставляем muted и даём пользователю включить звук
+                // Но по умолчанию autoplay с muted работает всегда, убираем muted чтобы был звук?
+                // Лучше оставить без muted, но браузер может заблокировать. Сделаем с возможностью размутить через клик.
+                // Уберём muted, но если блокирует - включим подсказку.
+                if (celebrationVideo.muted) {
+                    celebrationVideo.muted = false;
+                }
+            }
+            isVideoPlaying = true;
+        }
+
+        // Закрытие видео через кнопку
+        closeVideoBtn.addEventListener('click', closeVideoModal);
+
+        // Закрытие видео по клику на фон (оверлей)
+        videoModal.addEventListener('click', (e) => {
+            if (e.target === videoModal) {
+                closeVideoModal();
+            }
+        });
+
+        // Закрытие текстового модального окна
+        closeModalBtn.addEventListener('click', closeTextModal);
+        textModal.addEventListener('click', (e) => {
+            if (e.target === textModal) {
+                closeTextModal();
+            }
+        });
+
+        // ---- Обработка нажатия "ДА" - сначала видео, потом текст ----
+        yesButton.addEventListener('click', () => {
+            // Открываем видео-модалку
+            openVideoModal();
+        });
+
+        // ---- УБЕГАЮЩАЯ КНОПКА "НЕТ" (с защитой от наезда на "ДА") ----
+
+        function getButtonBounds(button, parentRect) {
+            const rect = button.getBoundingClientRect();
+            return {
+                left: rect.left - parentRect.left,
+                top: rect.top - parentRect.top,
+                right: rect.right - parentRect.left,
+                bottom: rect.bottom - parentRect.top,
+                width: rect.width,
+                height: rect.height
+            };
+        }
+
+        function isOverlapping(bounds1, bounds2, margin = 15) {
+            return !(bounds1.right + margin < bounds2.left ||
+              bounds2.right + margin < bounds1.left ||
+              bounds1.bottom + margin < bounds2.top ||
+              bounds2.bottom + margin < bounds1.top);
+        }
+
+        function getSafePosition(noBtn, yesBtn, parent) {
+            const parentRect = parent.getBoundingClientRect();
+            const noWidth = noBtn.offsetWidth;
+            const noHeight = noBtn.offsetHeight;
+
+            const maxLeft = Math.max(0, parentRect.width - noWidth);
+            const maxTop = Math.max(0, parentRect.height - noHeight);
+
+            if (maxLeft <= 0 || maxTop <= 0) {
+                return { left: 0, top: 0 };
+            }
+
+            const yesRect = yesBtn.getBoundingClientRect();
+            const yesBounds = {
+                left: yesRect.left - parentRect.left,
+                top: yesRect.top - parentRect.top,
+                right: yesRect.right - parentRect.left,
+                bottom: yesRect.bottom - parentRect.top,
+                width: yesRect.width,
+                height: yesRect.height
+            };
+
+            const maxAttempts = 50;
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                let randomLeft = Math.random() * maxLeft;
+                let randomTop = Math.random() * maxTop;
+                randomLeft = Math.min(maxLeft, Math.max(0, randomLeft));
+                randomTop = Math.min(maxTop, Math.max(0, randomTop));
+
+                const noBounds = {
+                    left: randomLeft,
+                    top: randomTop,
+                    right: randomLeft + noWidth,
+                    bottom: randomTop + noHeight,
+                    width: noWidth,
+                    height: noHeight
+                };
+
+                if (!isOverlapping(noBounds, yesBounds, 20)) {
+                    if (randomLeft >= 0 && randomLeft <= maxLeft && randomTop >= 0 && randomTop <= maxTop) {
+                        return { left: randomLeft, top: randomTop };
+                    }
+                }
+            }
+
+            // Запасные позиции
+            const positions = [];
+            if (yesBounds.left - noWidth - 10 >= 0) {
+                positions.push({ left: yesBounds.left - noWidth - 10, top: Math.min(maxTop, Math.max(0, yesBounds.top)) });
+            }
+            if (yesBounds.right + 10 + noWidth <= parentRect.width) {
+                positions.push({ left: yesBounds.right + 10, top: Math.min(maxTop, Math.max(0, yesBounds.top)) });
+            }
+            if (yesBounds.top - noHeight - 10 >= 0) {
+                positions.push({ left: Math.min(maxLeft, Math.max(0, yesBounds.left)), top: yesBounds.top - noHeight - 10 });
+            }
+            if (yesBounds.bottom + 10 + noHeight <= parentRect.height) {
+                positions.push({ left: Math.min(maxLeft, Math.max(0, yesBounds.left)), top: yesBounds.bottom + 10 });
+            }
+
+            if (positions.length > 0) {
+                return positions[0];
+            }
+
+            let fallbackLeft = Math.random() * maxLeft;
+            let fallbackTop = Math.random() * maxTop;
+            fallbackLeft = Math.min(maxLeft, Math.max(0, fallbackLeft));
+            fallbackTop = Math.min(maxTop, Math.max(0, fallbackTop));
+            return { left: fallbackLeft, top: fallbackTop };
+        }
+
+        function moveNoButtonSafely() {
+            if (!noButton || !container || !yesButton) return;
+
+            const currentPosition = getComputedStyle(noButton).position;
+
+            if (currentPosition !== 'absolute') {
+                const containerRect = container.getBoundingClientRect();
+                const btnRect = noButton.getBoundingClientRect();
+                const offsetLeft = btnRect.left - containerRect.left;
+                const offsetTop = btnRect.top - containerRect.top;
+
+                noButton.style.position = 'absolute';
+                noButton.style.left = offsetLeft + 'px';
+                noButton.style.top = offsetTop + 'px';
+                noButton.style.margin = '0';
+                noButton.style.display = 'inline-block';
+                noButton.style.transition = 'left 0.15s ease-out, top 0.15s ease-out';
+                noButton.style.flex = 'none';
+            }
+
+            const safePos = getSafePosition(noButton, yesButton, container);
+            noButton.style.left = safePos.left + 'px';
+            noButton.style.top = safePos.top + 'px';
+        }
+
+        let isMoving = false;
+
+        function evadeHandler(event) {
+            if (textModal.classList.contains('active') || videoModal.classList.contains('active')) return;
+            if (isMoving) return;
+            isMoving = true;
+
+            noButton.style.transform = 'scale(0.96)';
+            setTimeout(() => {
+                if (noButton) noButton.style.transform = '';
+            }, 120);
+
+            moveNoButtonSafely();
+
+            setTimeout(() => {
+                isMoving = false;
+            }, 150);
+
+            if (event.type === 'touchstart') {
+                event.preventDefault();
+            }
+            if (event.type === 'click') {
+                event.preventDefault();
+                return false;
+            }
+        }
+
+        noButton.addEventListener('mouseenter', evadeHandler);
+        noButton.addEventListener('click', (e) => {
+            if (textModal.classList.contains('active') || videoModal.classList.contains('active')) return;
+            e.preventDefault();
+            e.stopPropagation();
+            if (!isMoving) {
+                moveNoButtonSafely();
+                noButton.style.transform = 'scale(0.95)';
+                setTimeout(() => { if(noButton) noButton.style.transform = ''; }, 120);
+            }
+            return false;
+        });
+
+        noButton.addEventListener('touchstart', evadeHandler, { passive: false });
+        noButton.addEventListener('touchend', (e) => {
+            if (textModal.classList.contains('active') || videoModal.classList.contains('active')) return;
+            e.preventDefault();
+        });
+
+        noButton.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Space') {
+                e.preventDefault();
+                moveNoButtonSafely();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (!noButton || !container) return;
+            if (getComputedStyle(noButton).position === 'absolute') {
+                moveNoButtonSafely();
+            }
+        });
+
+        if (container && getComputedStyle(container).position === 'static') {
+            container.style.position = 'relative';
+        }
+
+        // Инициализация: проверка, чтобы при загрузке кнопка "Нет" не перекрывала "Да"
+        setTimeout(() => {
+            if (noButton && yesButton && container) {
+                const containerRect = container.getBoundingClientRect();
+                const noRect = noButton.getBoundingClientRect();
+                const yesRect = yesButton.getBoundingClientRect();
+                const noBounds = {
+                    left: noRect.left - containerRect.left,
+                    top: noRect.top - containerRect.top,
+                    right: noRect.right - containerRect.left,
+                    bottom: noRect.bottom - containerRect.top
+                };
+                const yesBounds = {
+                    left: yesRect.left - containerRect.left,
+                    top: yesRect.top - containerRect.top,
+                    right: yesRect.right - containerRect.left,
+                    bottom: yesRect.bottom - containerRect.top
+                };
+                if (isOverlapping(noBounds, yesBounds, 10)) {
+                    moveNoButtonSafely();
+                }
+            }
+        }, 100);
+
+        // Обработчик ошибки загрузки видео
+        if (celebrationVideo) {
+            celebrationVideo.addEventListener('error', (e) => {
+                console.warn('Видео не найдено в корне. Убедитесь, что файл video.mp4 присутствует.');
+                // Если видео нет, всё равно показываем текстовое поздравление, но видео-модалку закрываем
+                const errorMsg = document.querySelector('.video-message');
+                if (errorMsg) {
+                    errorMsg.innerHTML = '⚠️ Видео не найдено, но дружба состоялась! 🎉<br>Поместите video.mp4 в корневую папку.';
+                    errorMsg.style.background = 'rgba(0,0,0,0.8)';
+                }
+                // Через 2 секунды автоматически закрыть видео-модалку и показать текст
+                setTimeout(() => {
+                    if (videoModal.classList.contains('active')) {
+                        closeVideoModal();
+                    }
+                }, 2000);
+            });
+
+            // Чтобы видео точно было зациклено
+            celebrationVideo.loop = true;
+        }
+
+        console.log("🎬 Готово! При нажатии ДА — появится зацикленное видео из корня (video.mp4), затем текстовое поздравление.");
+    })();
+</script>
+</body>
+</html>
